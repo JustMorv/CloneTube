@@ -1,0 +1,55 @@
+main > .container {
+    padding: 70px 15px 20px;
+}
+main{
+    flex: 1;
+}
+.container-wrapper{
+    flex: 1;
+}
+aside{
+    min-width: 200px;
+    margin-top: 10px;
+}
+
+/*!* align the logout "link" (button in form) of the navbar *!*/
+/*.nav li > form > button.logout {*/
+/*    padding-top: 7px;*/
+/*    color: rgba(255, 255, 255, 0.5);*/
+/*}*/
+
+/*@media(max-width:767px) {*/
+/*    .nav li > form > button.logout {*/
+/*        display:block;*/
+/*        text-align: left;*/
+/*        width: 100%;*/
+/*        padding: 10px 0;*/
+/*    }*/
+/*}*/
+
+/*.nav > li > form > button.logout:focus,*/
+/*.nav > li > form > button.logout:hover {*/
+/*    text-decoration: none;*/
+/*    color: rgba(255, 255, 255, 0.75);*/
+/*}*/
+
+/*.nav > li > form > button.logout:focus {*/
+/*    outline: none;*/
+/*}*/
+
+
+aside .nav-pills .nav-link {
+    border-radius: 0;
+    color: #444444;
+}
+
+
+aside .nav-pills .nav-link:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+aside .nav-pills .nav-link.active {
+    background: rgba(0, 0, 0, 0.05);
+    color: #b90000;
+    border-left: 4px solid #b90000;
+}
