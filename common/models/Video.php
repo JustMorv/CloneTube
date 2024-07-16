@@ -2,7 +2,12 @@
 
 namespace common\models;
 
+use Imagine\Image\Box;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\helpers\FileHelper;
+use yii\imagine\Image;
 
 /**
  * This is the model class for table "{{%video}}".
@@ -10,24 +15,51 @@ use Yii;
  * @property string $video_id
  * @property string $title
  * @property string|null $description
- * @property string|null $video_name
- * @property int|null $status
  * @property string|null $tags
+ * @property int|null $status
  * @property int|null $has_thumbnail
- * @property int|null $created_by
+ * @property string|null $video_name
  * @property int|null $created_at
- * @property int|null $update_at
+ * @property int|null $updated_at
+ * @property int|null $created_by
  *
  * @property User $createdBy
+ * @property \common\models\VideoLike[] $likes
+ * @property \common\models\VideoLike[] $dislikes
  */
 class Video extends \yii\db\ActiveRecord
 {
+    const STATUS_UNLISTED = 0;
+    const STATUS_PUBLISHED = 1;
+
+
+    /**
+     * @var \yii\web\UploadedFile
+     */
+    public $video;
+
+    /**
+     * @var \yii\web\UploadedFile
+     */
+    public $thumbnail;
+
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
         return '{{%video}}';
+    }
+
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class,
+            [
+                'class' => BlameableBehavior::class,
+                'updatedByAttribute' => false
+            ]
+        ];
     }
 
     /**
@@ -38,11 +70,14 @@ class Video extends \yii\db\ActiveRecord
         return [
             [['video_id', 'title'], 'required'],
             [['description'], 'string'],
-            [['status', 'has_thumbnail', 'created_by', 'created_at', 'update_at'], 'integer'],
+            [['status', 'has_thumbnail', 'created_at', 'updated_at', 'created_by'], 'integer'],
             [['video_id'], 'string', 'max' => 16],
-            [['title', 'video_name', 'tags'], 'string', 'max' => 512],
+            [['title', 'tags', 'video_name'], 'string', 'max' => 512],
             [['video_id'], 'unique'],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
+            ['has_thumbnail', 'default', 'value' => 0],
+            ['status', 'default', 'value' => self::STATUS_UNLISTED],
+            ['video', 'file', 'extensions' => ['mp4']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
         ];
     }
 
@@ -55,13 +90,22 @@ class Video extends \yii\db\ActiveRecord
             'video_id' => 'Video ID',
             'title' => 'Title',
             'description' => 'Description',
-            'video_name' => 'Video Name',
-            'status' => 'Status',
             'tags' => 'Tags',
+            'status' => 'Status',
             'has_thumbnail' => 'Has Thumbnail',
-            'created_by' => 'Created By',
+            'video_name' => 'Video Name',
             'created_at' => 'Created At',
-            'update_at' => 'Update At',
+            'updated_at' => 'Updated At',
+            'created_by' => 'Created By',
+            'thumbnail' => 'Thumbnail'
+        ];
+    }
+
+    public function getStatusLabels()
+    {
+        return [
+            self::STATUS_UNLISTED => 'Unlisted',
+            self::STATUS_PUBLISHED => 'Published',
         ];
     }
 
@@ -72,15 +116,43 @@ class Video extends \yii\db\ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::class, ['id' => 'created_by']);
+        return $this->hasOne(User::className(), ['id' => 'created_by']);
     }
 
-    /**
-     * {@inheritdoc}
-     * @return \common\models\query\videoQuery the active query used by this AR class.
-     */
+
     public static function find()
     {
-        return new \common\models\query\videoQuery(get_called_class());
+        return new \common\models\query\VideoQuery(get_called_class());
     }
+
+    public function save($runValidation = true, $attributeNames = null)
+    {
+        $isInsert = $this->isNewRecord;
+        if ($isInsert) {
+            $this->video_id = Yii::$app->security->generateRandomString(8);
+            $this->title = $this->video->name;
+            $this->video_name = $this->video->name;
+        }
+
+        $saved = parent::save($runValidation, $attributeNames);
+        if (!$saved) {
+            return false;
+        }
+        if ($isInsert) {
+            $videoPath = Yii::getAlias('@frontend/web/storage/videos/' . $this->video_id . '.mp4');
+            if (!is_dir(dirname($videoPath))) {
+                FileHelper::createDirectory(dirname($videoPath));
+            }
+            $this->video->saveAs($videoPath);
+        }
+
+
+        return true;
+    }
+
+    public function getVideoLink()
+    {
+        return Yii::$app->params['frontedUrl'] . 'storage/videos' . $this->video_id . '.mp4';
+    }
+
 }

@@ -17,7 +17,7 @@ use yii\bootstrap5\NavBar;
         ],
     ]);
     $menuItems = [
-        ['label' => Yii::t('app', 'Create'), 'url' => ['/site/index']],
+        ['label' => Yii::t('app', 'Create'), 'url' => ['/video/create']],
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
