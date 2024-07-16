@@ -1,7 +1,10 @@
 RewriteEngine on
+# если ваш проект не находится в корневом каталоге веб-сервера, укажите путь в RewriteBase
+# RewriteBase /path/to/project
 
-# If a directory or a file exists, use it directly
+# если файл или директория существуют, используйте их напрямую
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-# Otherwise forward it to index.php
+
+# в противном случае, отправьте запрос на index.php
 RewriteRule . index.php
