@@ -5,6 +5,7 @@ namespace backend\controllers;
 use common\models\Video;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -25,12 +26,22 @@ class VideoController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ]
+                    ]
+                ],
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
                     ],
                 ],
+
             ]
         );
     }
@@ -43,7 +54,9 @@ class VideoController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Video::find(),
+            'query' => Video::find()
+                ->creator(Yii::$app->user->identity->getId())
+                ->letest(),
             /*
             'pagination' => [
                 'pageSize' => 50
@@ -73,6 +86,7 @@ class VideoController extends Controller
             'model' => $this->findModel($video_id),
         ]);
     }
+
     public function actionDoc()
     {
         return $this->render('doc');
@@ -87,6 +101,7 @@ class VideoController extends Controller
     {
         $model = new Video();
 
+
         if (Yii::$app->request->isPost) {
             $model->video = UploadedFile::getInstance($model, 'video');
 
@@ -99,6 +114,7 @@ class VideoController extends Controller
             'model' => $model,
         ]);
     }
+
     /**
      * Updates an existing Video model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -109,6 +125,7 @@ class VideoController extends Controller
     public function actionUpdate($video_id)
     {
         $model = $this->findModel($video_id);
+        $model->thumbnail = UploadedFile::getInstanceByName('thumbnail');
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'video_id' => $model->video_id]);
