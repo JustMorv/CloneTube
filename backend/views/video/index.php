@@ -27,8 +27,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'attribute' => 'title',
-                'content' => function($model){
-                    return $this->render('_video_item', ['model'=>$model]);
+                'content' => function ($model) {
+                    return $this->render('_video_item', ['model' => $model]);
                 }
             ],
             [
@@ -46,6 +46,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'urlCreator' => function ($action, Video $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'video_id' => $model->video_id]);
                 }
+//                'buttons' => [
+//                    'delete' => function ($url) {
+//                        return Html::a('delete', $url, [
+//                            'data-method' => 'post',
+//                            'data-confirm' => 'are you sure?'
+//                        ]);
+//                    }
+//                ]
             ],
         ],
     ]); ?>

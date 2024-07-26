@@ -9,7 +9,7 @@
         'items' => [
             [
                 'label' => Yii::t('app', 'Home'),
-                'url' => ['/site/index']
+                'url' => ['/video/index']
             ],
             [
                 'label' => Yii::t('app', 'History'),
