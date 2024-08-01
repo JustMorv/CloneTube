@@ -22,7 +22,6 @@ use yii\imagine\Image;
  * @property int|null $created_at
  * @property int|null $updated_at
  * @property int|null $created_by
- *
  * @property User $createdBy
  * @property \common\models\VideoLike[] $likes
  * @property \common\models\VideoLike[] $dislikes
@@ -163,6 +162,19 @@ class Video extends \yii\db\ActiveRecord
         return true;
     }
 
+    public function getViews()
+    {
+        return $this->hasMany(VideoView::class, ['video_id' => 'video_id']);
+    }
+    public function getLikes()
+    {
+        return $this->hasMany(VideoLike::class, ['video_id' => 'video_id'])->liked();
+    }
+    public function getDislikes()
+    {
+        return $this->hasMany(VideoLike::class, ['video_id' => 'video_id'])->Disliked();
+    }
+
     public function getVideoLink()
     {
         return Yii::$app->params['frontedUrl'] . 'storage/videos/' . $this->video_id . '.mp4';
@@ -186,6 +198,15 @@ class Video extends \yii\db\ActiveRecord
         if (file_exists($thumbnailPath)) {
             unlink($thumbnailPath);
         }
+    }
+
+    public function isLikeby($user_id)
+    {
+        return VideoLike::find()->userIdVideID($user_id, $this->video_id)->liked()->one();
+    }
+    public function isDisLikeby($user_id)
+    {
+        return VideoLike::find()->userIdVideID($user_id, $this->video_id)->Disliked()->one();
     }
 
 }

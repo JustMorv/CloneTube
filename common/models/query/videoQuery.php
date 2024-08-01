@@ -2,6 +2,8 @@
 
 namespace common\models\query;
 
+use common\models\VideoLike;
+
 /**
  * This is the ActiveQuery class for [[\common\models\Video]].
  *
@@ -31,12 +33,17 @@ class videoQuery extends \yii\db\ActiveQuery
     {
         return parent::one($db);
     }
+
     public function creator($user)
     {
-        return $this->andWhere(['created_by'=> $user]);
+        return $this->andWhere(['created_by' => $user]);
     }
+
     public function letest()
     {
-        return $this->orderBy(['created_at'=>SORT_DESC]);
+        return $this->orderBy(['created_at' => SORT_DESC]);
     }
+
+
+
 }
