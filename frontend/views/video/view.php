@@ -24,7 +24,7 @@
         </div>
 
         <div class="">
-                <?=$model->createdBy->username?>
+               <?=\yii\helpers\Html::a($model->createdBy->username,['/channel/view', 'username' => $model->createdBy->username])?>
             <p><?=\yii\helpers\Html::encode($model->description)?></p>
         </div>
     </div>

@@ -41,6 +41,7 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '/c/<usernaem>'=>'/channel/view'
             ],
         ],
     ],
