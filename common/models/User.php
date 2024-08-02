@@ -117,6 +117,11 @@ class User extends ActiveRecord implements IdentityInterface
         ]);
     }
 
+    public function getSubscribers()
+    {
+        return $this->hasMany(User::class, ['id'=> 'user_id'])->viaTable('subscriber', ['channel_id'=>'id']);
+    }
+
     /**
      * Finds out if password reset token is valid
      *
@@ -209,5 +214,13 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public function isSubcribed()
+    {
+        return Subscriber::find()->andWhere([
+            'channel_id' => $this->id,
+            'user_id' => Yii::$app->user->id
+        ])->one();
     }
 }

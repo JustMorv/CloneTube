@@ -14,7 +14,7 @@
             [
                 'label' => Yii::t('app', 'History'),
                 'url' => ['/video/history']
-            ]
+            ],
         ]
     ]) ?>
 </aside>
