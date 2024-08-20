@@ -4,6 +4,12 @@
 
 $this->title = 'My Yii Application';
 ?>
-<div class="site-index">
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem dicta dolorem laudantium maxime minima odit quos repellat voluptas voluptatibus. Asperiores at cupiditate et id iusto molestiae perspiciatis rerum sit.
-</div>
+
+<?php
+
+$auth = Yii::$app->authManager;
+if (Yii::$app->user->can('updateUser')){
+   \yii\helpers\VarDumper::dump('asdasssssssssssd');
+}else{
+   \yii\helpers\VarDumper::dump('asdasd');
+}?>
